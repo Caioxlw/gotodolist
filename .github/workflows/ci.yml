@@ -48,3 +48,49 @@ jobs:
       - name: 🧪 Execução de Testes Automatizados (Fail Fast)
         run: |
           go test -v ./...
+
+  security-scan:
+    name: 🛡️ DevSecOps (SAST Semgrep & Container Trivy)
+    needs: [lint-and-test] # Só executa a análise de segurança se a aplicação passar nos testes funcionais
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: 📥 Checkout do Código
+        uses: actions/checkout@v4
+
+      # -------------------------------------------------------------
+      # ETAPA 1: SAST - Análise Estática de Código com Semgrep
+      # -------------------------------------------------------------
+      - name: 🔍 SAST com Semgrep (Regras OWASP Top 10)
+        # Action oficial fixada em release estável
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/security-audit
+          auditOn: push
+
+      # -------------------------------------------------------------
+      # ETAPA 2: Build da Imagem de Teste Local
+      # -------------------------------------------------------------
+      - name: 🐳 Compilar Imagem Docker Efêmera para Análise
+        run: |
+          docker build -t app-audit:local .
+
+      # -------------------------------------------------------------
+      # ETAPA 3: Scanner de Vulnerabilidades de Imagem com Trivy
+      # -------------------------------------------------------------
+      - name: 🛡️ Escanear Imagem Docker com Aqua Security Trivy
+        # Fixada em versão imutável estável (NUNCA usar @master!)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'app-audit:local'
+          format: 'table'
+          # 🚨 QUEBRA O PIPELINE SE HOUVER VULNERABILIDADE GRAVE
+          exit-code: '1'
+          ignore-unfixed: true # Foca em falhas que já possuem patch/atualização disponível
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
