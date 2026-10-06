@@ -42,7 +42,7 @@ body:
     id: logs-evidence
     attributes:
       label: Logs e Evidências
-      description: Cole a saída exata dos comandos do terminal (ex.: docker compose logs, saída do curl, etc.)
+      description: "Cole a saída exata dos comandos do terminal (ex.: docker compose logs, saída do curl, etc.)"
       render: shell
     validations:
       required: false
