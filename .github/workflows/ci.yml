@@ -13,7 +13,7 @@ on:
 permissions:
   contents: read
 
-# Evita execuções concorrentes desnecessárias: cancela execuções antigas do mesmo PR quando novos commits chegam
+# Evita execuções concorrentes desnecessárias: cancela execuções antigas do mesmo PR quando novos commits chegam       
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -29,21 +29,21 @@ jobs:
       - name: 📥 Checkout Seguro do Código
         uses: actions/checkout@v4
 
-      - name: ⚙️ Configurar Runtime Node.js com Cache Nativo
+      - name: ⚙️ Configurar Runtime Go com Cache Nativo
         uses: actions/setup-go@v5
         with:
-          node-version: 20
-          # 🔒 BLINDAGEM 4: Reutilização inteligente de cache de pacotes
+          # Lê automaticamente a versão do Go direto do seu arquivo go.mod
+          go-version-file: 'go.mod'
+          # 🔒 BLINDAGEM 4: Reutilização inteligente de cache de pacotes (usa o go.sum)
           cache: true
-          cache-dependency-path: package-lock.json
 
-      - name: 📦 Instalação Determinística de Dependências
+      - name: 📦 Baixar Dependências do Módulo
         run: |
-          npm ci
+          go mod download
 
-      - name: 🧹 Verificação de Qualidade e Sintaxe (Lint)
+      - name: 🧹 Verificação de Qualidade e Sintaxe (Vet)
         run: |
-          npm run lint --if-present
+          go vet ./...
 
       - name: 🧪 Execução de Testes Automatizados (Fail Fast)
         run: |
