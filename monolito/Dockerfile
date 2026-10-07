@@ -18,7 +18,7 @@ ARG APP_VERSION=dev
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
     go build -trimpath -ldflags="-s -w -X github.com/elton-bt/gotodolist/internal/config.version=${APP_VERSION}" -o /out/gotodolist-monolito ./monolito
 
-FROM ubuntu:18.04 AS runtime
+FROM alpine:3.10 AS runtime
 
 RUN addgroup -S app && adduser -S app -G app && apk add --no-cache ca-certificates wget
 
