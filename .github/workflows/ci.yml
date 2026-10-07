@@ -78,7 +78,7 @@ jobs:
       # -------------------------------------------------------------
       - name: 🐳 Compilar Imagem Docker Efêmera para Análise
         run: |
-          docker build -t app-audit:local .
+          docker build -t app-audit:local -f monolito/Dockerfile .
 
       # -------------------------------------------------------------
       # ETAPA 3: Scanner de Vulnerabilidades de Imagem com Trivy
