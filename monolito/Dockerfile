@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
-FROM golang:1.26-alpine AS build
+FROM golang:latest AS build
+
 
 WORKDIR /src
 
@@ -17,7 +18,7 @@ ARG APP_VERSION=dev
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
     go build -trimpath -ldflags="-s -w -X github.com/elton-bt/gotodolist/internal/config.version=${APP_VERSION}" -o /out/gotodolist-monolito ./monolito
 
-FROM alpine:3.22.4 AS runtime
+FROM alpine:3.10 AS runtime
 
 RUN addgroup -S app && adduser -S app -G app && apk add --no-cache ca-certificates wget
 

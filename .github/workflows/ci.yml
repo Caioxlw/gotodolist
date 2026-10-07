@@ -77,8 +77,7 @@ jobs:
       # ETAPA 2: Build da Imagem de Teste Local
       # -------------------------------------------------------------
       - name: 🐳 Compilar Imagem Docker Efêmera para Análise
-        run: |
-          docker build -t app-audit:local .
+        run: docker build -t app-audit:local -f monolito/Dockerfile .
 
       # -------------------------------------------------------------
       # ETAPA 3: Scanner de Vulnerabilidades de Imagem com Trivy
